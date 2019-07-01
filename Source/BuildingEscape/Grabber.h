@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Controller.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Grabber.generated.h"
 
@@ -29,4 +30,5 @@ public:
 	
 private:
 	float Reach = 100.0f;
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 };

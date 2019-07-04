@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Controller.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Engine/EngineTypes.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Grabber.generated.h"
@@ -45,4 +46,5 @@ private:
 
 	// Return hit for first physics body in reach
 	FHitResult GetFirstPhysicsBodyInReach() const;
+	FVector GetLineTraceEnd();
 };

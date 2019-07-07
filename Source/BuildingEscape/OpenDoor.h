@@ -40,8 +40,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	float DoorCloseDelay = 1.0f;
 
-	float LastDoorOpenTime;
+	UPROPERTY(EditAnywhere)
+	float TotalTriggerWeightKg = 30.0f;
 
-	AActor* ActorThatOpens; // Remember Pawn inherits from Actor
+	float LastDoorOpenTime;
 	AActor* Door;
+	
+	// Returns total mass in kg
+	float GetTotalMassOfActorsOnPlate();
 };

@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Components/PointLightComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SpotLightComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Public/DrawDebugHelpers.h"
 #include "LightSwitchTrigger.generated.h"
 
@@ -25,16 +28,20 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void ToggleLight();
 
+	void ToggleLight();
 	void CreatePointLight();
 	void CreateLightSphere();
+	void AttachStaticMesh();
 
 	UPROPERTY(VisibleAnywhere, Category = "Light Switch")
-	UPointLightComponent* PointLight;
+	UStaticMeshComponent* LightVisual;
 
 	UPROPERTY(VisibleAnywhere, Category = "Light Switch")
-	class USphereComponent* LightSphere;
+	USpotLightComponent* PointLight;
+
+	UPROPERTY(VisibleAnywhere, Category = "Light Switch")
+	USphereComponent* LightSphere;
 
 	UPROPERTY(EditAnywhere, Category = "Light Switch")
 	float LightIntensity = 3000.0f;

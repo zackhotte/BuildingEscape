@@ -6,49 +6,64 @@
 // Sets default values
 ALightSwitchTrigger::ALightSwitchTrigger()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CreatePointLight();
 	CreateLightSphere();
+	AttachStaticMesh();
 }
 
 void ALightSwitchTrigger::CreatePointLight()
 {
-	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("Point light"));
+	PointLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Point light"));
 	if (PointLight != nullptr)
 	{
 		PointLight->SetIntensity(LightIntensity);
 		PointLight->SetVisibility(false);
+		PointLight->SetLightColor(FLinearColor(0.0f, 97.0f, 62.0f));
+		PointLight->SetInnerConeAngle(20.0f);
+		PointLight->SetOuterConeAngle(50.0f);
+		PointLight->SetLightColor(FLinearColor(0.0f, 97.0f, 62.0f));
 		RootComponent = PointLight;
 	}
 }
 
 void ALightSwitchTrigger::CreateLightSphere()
 {
-	if (PointLight != nullptr)
+	LightSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Light Sphere Comp"));
+	if (LightSphere != nullptr)
 	{
-		LightSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Light Sphere Comp"));
-		if (LightSphere != nullptr)
-		{
-			LightSphere->InitSphereRadius(SphereRadius);
-			LightSphere->SetCollisionProfileName(TEXT("Trigger"));
-			LightSphere->SetupAttachment(RootComponent);
+		LightSphere->InitSphereRadius(SphereRadius);
+		LightSphere->SetCollisionProfileName(TEXT("Trigger"));
+		LightSphere->SetupAttachment(RootComponent);
 
-			LightSphere->OnComponentBeginOverlap.AddDynamic(this, &ALightSwitchTrigger::OnOverlapBegin);
-			LightSphere->OnComponentEndOverlap.AddDynamic(this, &ALightSwitchTrigger::OnOverlapEnd);
-		}
+		LightSphere->OnComponentBeginOverlap.AddDynamic(this, &ALightSwitchTrigger::OnOverlapBegin);
+		LightSphere->OnComponentEndOverlap.AddDynamic(this, &ALightSwitchTrigger::OnOverlapEnd);
 	}
 }
 
-
+void ALightSwitchTrigger::AttachStaticMesh()
+{
+	LightVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Light Visual"));
+	if (LightVisual != nullptr)
+	{
+		LightVisual->SetupAttachment(RootComponent);
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> LightVisualAsset(TEXT("/Game/torch"));
+		if (LightVisualAsset.Succeeded())
+		{
+			LightVisual->SetStaticMesh(LightVisualAsset.Object);
+			LightVisual->SetRelativeRotation(FRotator(90.0f, 90.0f, 0.0f));
+			LightVisual->SetWorldScale3D(FVector(0.15f));
+		}
+	}
+}
 
 
 // Called when the game starts or when spawned
 void ALightSwitchTrigger::BeginPlay()
 {
 	Super::BeginPlay();
-	ToggleLight();
 
 	LightSphere->SetSphereRadius(SphereRadius);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 50, FColor::Green, -1, 0, 2);

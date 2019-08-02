@@ -9,9 +9,9 @@ ALightSwitchTrigger::ALightSwitchTrigger()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AttachStaticMesh();
 	CreatePointLight();
 	CreateLightSphere();
-	AttachStaticMesh();
 }
 
 void ALightSwitchTrigger::CreatePointLight()
@@ -25,7 +25,7 @@ void ALightSwitchTrigger::CreatePointLight()
 		PointLight->SetInnerConeAngle(20.0f);
 		PointLight->SetOuterConeAngle(50.0f);
 		PointLight->SetLightColor(FLinearColor(0.0f, 97.0f, 62.0f));
-		RootComponent = PointLight;
+		PointLight->SetupAttachment(RootComponent);
 	}
 }
 
@@ -48,7 +48,7 @@ void ALightSwitchTrigger::AttachStaticMesh()
 	LightVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Light Visual"));
 	if (LightVisual != nullptr)
 	{
-		LightVisual->SetupAttachment(RootComponent);
+		RootComponent = LightVisual;
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> LightVisualAsset(TEXT("/Game/torch"));
 		if (LightVisualAsset.Succeeded())
 		{
@@ -66,7 +66,6 @@ void ALightSwitchTrigger::BeginPlay()
 	Super::BeginPlay();
 
 	LightSphere->SetSphereRadius(SphereRadius);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 50, FColor::Green, -1, 0, 2);
 }
 
 // Called every frame
@@ -93,6 +92,7 @@ void ALightSwitchTrigger::OnOverlapBegin(
 {
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Overlapped!"))
 		ToggleLight();
 	}
 }
